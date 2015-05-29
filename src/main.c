@@ -5,7 +5,6 @@
 // Con código de https://ninedof.wordpress.com/2014/05/24/pebble-sdk-2-0-tutorial-9-app-configuration/
 
 
-// UUID para versión en español: "11d1527e-985b-4844-bc10-34ede0ee9caf"
 // UUID para versión en inglés:  "a8336799-b197-4e3d-8afd-3290317c65b2"
 
 
