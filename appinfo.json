@@ -1,0 +1,118 @@
+{
+    "appKeys": {
+        "KEY_BACK": 5,
+        "KEY_DATEFORMAT": 2,
+        "KEY_HOURLYVIBE": 4,
+        "KEY_IDIOMA": 0,
+        "KEY_SEGUNDOS": 3,
+        "KEY_VIBE": 1
+    },
+    "capabilities": [
+        "configurable"
+    ],
+    "companyName": "Pedro",
+    "longName": "Db 31",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/fondocolor-sinsombras.png",
+                "name": "IMAGE_BACKGROUND_COLOR_NS",
+                "type": "png"
+            },
+            {
+                "file": "images/fondo-c.png",
+                "name": "IMAGE_BACKGROUND_COLOR",
+                "type": "png"
+            },
+            {
+                "file": "images/fondo.png",
+                "name": "IMAGE_BACKGROUND",
+                "type": "png"
+            },
+            {
+                "file": "images/icon_meter.png",
+                "name": "IMAGE_METER_BAR",
+                "type": "png"
+            },
+            {
+                "characterRegex": "[0-9 :]",
+                "file": "fonts/PBL_Hora.ttf",
+                "name": "FUENTE_HORA_64",
+                "trackingAdjust": -8,
+                "type": "font"
+            },
+            {
+                "characterRegex": "[A-Z,0-9]",
+                "file": "fonts/PBL_Letras.ttf",
+                "name": "FUENTE_LETRAS_24",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[0-9]",
+                "file": "fonts/PBL_Bateria.ttf",
+                "name": "FUENTE_BATERIA_8",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[0-9]",
+                "file": "fonts/PBL_Segundos.ttf",
+                "name": "FUENTE_SEGUNDOS_32",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[0-9]",
+                "file": "fonts/PBL_Fecha.ttf",
+                "name": "FUENTE_FECHA_32",
+                "type": "font"
+            },
+            {
+                "file": "images/icono.png",
+                "menuIcon": true,
+                "name": "IMAGE_ICONO",
+                "type": "png"
+            },
+            {
+                "file": "images/icon_bluetooth.png",
+                "name": "IMAGE_BLUETOOTH",
+                "type": "png"
+            },
+            {
+                "file": "images/time_format_24H.png",
+                "name": "IMAGE_24_HOUR_MODE",
+                "type": "png"
+            },
+            {
+                "file": "images/time_format_PM.png",
+                "name": "IMAGE_PM_MODE",
+                "type": "png"
+            },
+            {
+                "file": "images/bateriacargando.png",
+                "name": "IMAGE_BATTERY_CHARGE",
+                "type": "png"
+            },
+            {
+                "file": "images/bateria.png",
+                "name": "IMAGE_BATTERY",
+                "type": "png"
+            },
+            {
+                "file": "images/tiny_percent.png",
+                "name": "IMAGE_TINY_PERCENT",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Db 31",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "421ac8ac-f3e0-11e4-b9b2-1697f925ec7b",
+    "versionLabel": "0.5",
+    "watchapp": {
+        "watchface": true
+    }
+}
