@@ -102,6 +102,8 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     persist_write_int(KEY_IDIOMA, 4);
   else if(strcmp(key_idioma_tuple->value->cstring, "portuguese") == 0)
     persist_write_int(KEY_IDIOMA, 5);  
+  else if(strcmp(key_idioma_tuple->value->cstring, "dutch") == 0)
+    persist_write_int(KEY_IDIOMA, 6);
   else
     persist_write_int(KEY_IDIOMA, 0);
  
@@ -236,6 +238,7 @@ static void update_days(struct tm *tick_time) {
   const char *dias_de[] = {"SON", "MON", "DIE", "MIT", "DON", "FRE", "SAM"};
   const char *dias_it[] = {"DOM", "LUN", "MAR", "MER", "GIO", "VEN", "SAB"};
   const char *dias_pt[] = {"DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"};
+  const char *dias_nl[] = {"ZON", "MAA", "DIN", "WOE", "DON", "VRI", "ZAT"};
   
   switch (IDIOMA)
   {
@@ -256,6 +259,9 @@ static void update_days(struct tm *tick_time) {
     break;   
   case 5:
     text_layer_set_text(text_layer_letras, dias_pt[tick_time->tm_wday]); 
+    break;
+  case 6:
+    text_layer_set_text(text_layer_letras, dias_nl[tick_time->tm_wday]); 
     break;   
   default:
     text_layer_set_text(text_layer_letras, dias_en[tick_time->tm_wday]); 
