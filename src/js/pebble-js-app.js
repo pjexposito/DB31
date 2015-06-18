@@ -9,8 +9,7 @@ Pebble.addEventListener("ready",
 Pebble.addEventListener("showConfiguration",
   function(e) {
     //Carga la web de configuración
-    //Pebble.openURL("https://dl.dropboxusercontent.com/u/119376/config-time.html"); // original url: without dutch option
-    Pebble.openURL("https://dl.dropboxusercontent.com/u/78618251/DB31/config-time.html");
+    Pebble.openURL("https://dl.dropboxusercontent.com/u/119376/config-time.html");
   }
 );
 
