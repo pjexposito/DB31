@@ -260,7 +260,7 @@ static void update_days(struct tm *tick_time) {
   case 5:
     text_layer_set_text(text_layer_letras, dias_pt[tick_time->tm_wday]); 
     break;
-  case 5:
+  case 6:
     text_layer_set_text(text_layer_letras, dias_nl[tick_time->tm_wday]); 
     break;   
   default:
