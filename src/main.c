@@ -50,6 +50,7 @@ static bool appStarted = false;
 
 static GBitmap *background_image;
 static GBitmap *background_image_color;
+static GBitmap *background_image_color2;
 static GBitmap *background_image_color_ns;
 
 static GBitmap *battery_image;
@@ -146,10 +147,13 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
   if(SEGUNDOS)
   {
     tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
+    layer_set_bounds(text_layer_get_layer(text_layer_hora), GRect(3, 0, 100, 70));
+
   }
   else
   {
     tick_timer_service_subscribe(MINUTE_UNIT, handle_tick);
+    layer_set_bounds(text_layer_get_layer(text_layer_hora), GRect(10, 0, 100, 70));
   }
   layer_set_hidden(text_layer_get_layer(text_layer_segundos), !SEGUNDOS);
   
@@ -158,7 +162,10 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     if (BACK==0)
       bitmap_layer_set_bitmap(background_layer, background_image);
     else if (BACK==1) 
-      bitmap_layer_set_bitmap(background_layer, background_image_color);
+      if (SEGUNDOS)
+        bitmap_layer_set_bitmap(background_layer, background_image_color);
+      else
+        bitmap_layer_set_bitmap(background_layer, background_image_color2);
     else if (BACK==2) 
       bitmap_layer_set_bitmap(background_layer, background_image_color_ns);  
   #endif
@@ -239,7 +246,7 @@ static void update_days(struct tm *tick_time) {
   const char *dias_it[] = {"DOM", "LUN", "MAR", "MER", "GIO", "VEN", "SAB"};
   const char *dias_pt[] = {"DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"};
   const char *dias_nl[] = {"ZON", "MAA", "DIN", "WOE", "DON", "VRI", "ZAT"};
-  
+
   switch (IDIOMA)
   {
   case 0:
@@ -259,10 +266,10 @@ static void update_days(struct tm *tick_time) {
     break;   
   case 5:
     text_layer_set_text(text_layer_letras, dias_pt[tick_time->tm_wday]); 
-    break;
+    break;  
   case 6:
     text_layer_set_text(text_layer_letras, dias_nl[tick_time->tm_wday]); 
-    break;   
+    break;     
   default:
     text_layer_set_text(text_layer_letras, dias_en[tick_time->tm_wday]); 
     break;    
@@ -396,14 +403,19 @@ static void init(void) {
 	
   background_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
   background_image_color = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_COLOR);
+  background_image_color2 = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_COLOR2);
+
   background_image_color_ns = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_COLOR_NS);
   background_layer = bitmap_layer_create(layer_get_frame(window_layer));
   #ifdef PBL_COLOR 
     if (BACK==0)
       bitmap_layer_set_bitmap(background_layer, background_image);
     else if (BACK==1) 
-      bitmap_layer_set_bitmap(background_layer, background_image_color);
-    else if (BACK==2) 
+      if (SEGUNDOS)
+        bitmap_layer_set_bitmap(background_layer, background_image_color);
+      else
+        bitmap_layer_set_bitmap(background_layer, background_image_color2);
+  else if (BACK==2) 
       bitmap_layer_set_bitmap(background_layer, background_image_color_ns);  
   #else
     bitmap_layer_set_bitmap(background_layer, background_image);  
@@ -443,7 +455,7 @@ static void init(void) {
   
   // EMPIEZAN LOS CARACTERES
   
-  text_layer_hora = crea_capa_texto(GRect(7, 69, 100, 70), GColorBlack, GColorClear, fuente_hora, GTextAlignmentRight);
+  text_layer_hora = crea_capa_texto(GRect(0, 69, 130, 70), GColorBlack, GColorClear, fuente_hora, GTextAlignmentRight);
   layer_add_child(window_layer, text_layer_get_layer(text_layer_hora));
 
   text_layer_segundos = crea_capa_texto(GRect(107, 106, 40, 40), GColorBlack, GColorClear, fuente_segundos, GTextAlignmentLeft);
@@ -481,9 +493,15 @@ static void init(void) {
   
   
   if(SEGUNDOS)
+  {
     tick_timer_service_subscribe(SECOND_UNIT, handle_tick);
+    layer_set_bounds(text_layer_get_layer(text_layer_hora), GRect(3, 0, 100, 70));
+  }
   else
+  {
     tick_timer_service_subscribe(MINUTE_UNIT, handle_tick);
+    layer_set_bounds(text_layer_get_layer(text_layer_hora), GRect(10, 0, 100, 70));
+  }
   layer_set_hidden(text_layer_get_layer(text_layer_segundos), !SEGUNDOS);
 
   bluetooth_connection_service_subscribe(bluetooth_connection_callback);

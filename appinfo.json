@@ -16,6 +16,11 @@
     "resources": {
         "media": [
             {
+                "file": "images/fondo-c2.png",
+                "name": "IMAGE_BACKGROUND_COLOR2",
+                "type": "png"
+            },
+            {
                 "file": "images/fondocolor-sinsombras.png",
                 "name": "IMAGE_BACKGROUND_COLOR_NS",
                 "type": "png"
@@ -111,7 +116,7 @@
         "basalt"
     ],
     "uuid": "a8336799-b197-4e3d-8afd-3290317c65b2",
-    "versionLabel": "1.5",
+    "versionLabel": "1.7",
     "watchapp": {
         "watchface": true
     }
