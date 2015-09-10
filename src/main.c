@@ -335,6 +335,8 @@ static void update_minutes(struct tm *tick_time) {
 	     strftime(s_time_text, sizeof(s_time_text), "%l:%M", tick_time);      
 
     text_layer_set_text(text_layer_hora, s_time_text);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Hora es %s", s_time_text);
+
 }
 
 static void update_seconds(struct tm *tick_time) {
@@ -395,6 +397,7 @@ static void init(void) {
   window_layer = window_get_root_layer(window);
   
   GFont fuente_hora = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_HORA_64));
+
   GFont fuente_segundos = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_SEGUNDOS_32));
   GFont fuente_fecha = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_FECHA_32));
   GFont fuente_letras = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_LETRAS_24));
