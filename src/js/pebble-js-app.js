@@ -4,14 +4,14 @@ Pebble.addEventListener('ready', function() {
 
 Pebble.addEventListener('showConfiguration', function() {
   var url = 'https://dl.dropboxusercontent.com/u/119376/config-time/index.html';
-  console.log('Showing configuration page: ' + url);
+  //console.log('Showing configuration page: ' + url);
 
   Pebble.openURL(url);
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {
   var configData = JSON.parse(decodeURIComponent(e.response));
-  console.log('Configuration page returned: ' + JSON.stringify(configData));
+  //console.log('Configuration page returned: ' + JSON.stringify(configData));
 
 
   
@@ -23,7 +23,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
     dict['KEY_SEGUNDOS'] = configData.segundos;
     dict['KEY_HOURLYVIBE'] = configData.hourlyvibe;
     dict['KEY_BACK'] = configData.back;
-console.log(JSON.stringify(dict));
+//console.log(JSON.stringify(dict));
   // Send to watchapp
   Pebble.sendAppMessage(dict, function() {
     console.log('Send successful: ' + JSON.stringify(dict));

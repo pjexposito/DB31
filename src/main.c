@@ -335,7 +335,7 @@ static void update_minutes(struct tm *tick_time) {
 	     strftime(s_time_text, sizeof(s_time_text), "%l:%M", tick_time);      
 
     text_layer_set_text(text_layer_hora, s_time_text);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Hora es %s", s_time_text);
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Hora es %s", s_time_text);
 
 }
 
@@ -509,8 +509,10 @@ static void init(void) {
 
   bluetooth_connection_service_subscribe(bluetooth_connection_callback);
   battery_state_service_subscribe(&update_battery);
-  app_message_register_inbox_received((AppMessageInboxReceived) in_recv_handler);
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  //app_message_register_inbox_received((AppMessageInboxReceived) in_recv_handler);
+  //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  app_message_register_inbox_received(in_recv_handler);
+  app_message_open(64, 64);
 
 }
 
