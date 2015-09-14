@@ -65,6 +65,8 @@ static BitmapLayer *porcentaje_layer;
 static BitmapLayer *battery_image_layer;
 static BitmapLayer *battery_layer;
 
+GFont fuente_hora, fuente_segundos, fuente_fecha, fuente_letras, fuente_bateria;
+
 
 static void carga_preferencias(void)
   { 
@@ -396,12 +398,11 @@ static void init(void) {
   window_stack_push(window, true);
   window_layer = window_get_root_layer(window);
   
-  GFont fuente_hora = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_HORA_64));
-
-  GFont fuente_segundos = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_SEGUNDOS_32));
-  GFont fuente_fecha = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_FECHA_32));
-  GFont fuente_letras = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_LETRAS_24));
-  GFont fuente_bateria = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_BATERIA_8));
+  fuente_hora = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_HORA_64));
+  fuente_segundos = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_SEGUNDOS_32));
+  fuente_fecha = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_FECHA_32));
+  fuente_letras = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_LETRAS_24));
+  fuente_bateria = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUENTE_BATERIA_8));
   
 	
   background_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
@@ -522,6 +523,7 @@ static void deinit(void) {
   tick_timer_service_unsubscribe();
   bluetooth_connection_service_unsubscribe();
   battery_state_service_unsubscribe();
+  app_message_deregister_callbacks();
 
   layer_remove_from_parent(bitmap_layer_get_layer(background_layer));
   bitmap_layer_destroy(background_layer);
@@ -555,6 +557,13 @@ static void deinit(void) {
   text_layer_destroy(text_layer_fecha2);
   text_layer_destroy(text_layer_bateria);
 	
+  
+  fonts_unload_custom_font(fuente_hora);
+  fonts_unload_custom_font(fuente_segundos);
+  fonts_unload_custom_font(fuente_fecha);
+  fonts_unload_custom_font(fuente_letras);
+  fonts_unload_custom_font(fuente_bateria);
+  
   layer_remove_from_parent(window_layer);
   layer_destroy(window_layer);
 	

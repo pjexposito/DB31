@@ -41,7 +41,7 @@
                 "type": "png"
             },
             {
-                "characterRegex": "[0-9 :]",
+                "characterRegex": "[0-9 :.]",
                 "file": "fonts/PBL_Hora.ttf",
                 "name": "FUENTE_HORA_64",
                 "type": "font"
@@ -115,7 +115,7 @@
         "basalt"
     ],
     "uuid": "a8336799-b197-4e3d-8afd-3290317c65b2",
-    "versionLabel": "1.9",
+    "versionLabel": "1.91",
     "watchapp": {
         "watchface": true
     }
