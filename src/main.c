@@ -66,10 +66,12 @@ static GBitmap *background_image_color2;
 static GBitmap *background_image_color_ns;
 
 static GBitmap *battery_image;
+static GBitmap *separador_image;
 static GBitmap *time_format_image;
 static GBitmap *time_format_image24;
 
 static BitmapLayer *time_format_layer;
+static BitmapLayer *separador_layer;
 static BitmapLayer *background_layer;
 static BitmapLayer *meter_bar_layer;
 static BitmapLayer *bluetooth_layer;
@@ -106,13 +108,66 @@ void pide_datos_tiempo()
 }
 
 void sacudida (AccelAxisType axis, int32_t direction) {
+
+    // Según la fuente que he creado:
+    // ? = Lluvia
+    // * = Sol
+    // ! = Viento
+    // @ = Nubes
+    // _ = Niebla
+    // ' = Tormenta
+    static char s_icono_text[] = "9";
+    if ((CONDICION >= 200) && (CONDICION<=232))
+      {
+         APP_LOG(APP_LOG_LEVEL_DEBUG, "Tormenta");
+         snprintf(s_icono_text, sizeof(s_icono_text), "'");
+
+      }
+    else if (((CONDICION >= 300) && (CONDICION<=321)) || ((CONDICION >= 500) && (CONDICION<=531)))
+      {
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Lluvia");
+      	  snprintf(s_icono_text, sizeof(s_icono_text), "?");
+
+      }
+    else if ((CONDICION >= 600) && (CONDICION<=622))
+      {
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Nieve");
+        	snprintf(s_icono_text, sizeof(s_icono_text), "_");
+
+      }
+    else if (CONDICION == 800)
+      {
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Soleado");
+        	snprintf(s_icono_text, sizeof(s_icono_text), "*");
+
+      }
+    else if ((CONDICION >= 801) && (CONDICION<=804))
+      {
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Nublado");
+        	snprintf(s_icono_text, sizeof(s_icono_text), "@");
+
+      }
+    else if ((CONDICION >= 701) && (CONDICION<=781))
+      {
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Niebla");
+        	snprintf(s_icono_text, sizeof(s_icono_text), "_");
+
+      }
+    else
+      {
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Otros");
+        	snprintf(s_icono_text, sizeof(s_icono_text), "*");
+
+      }
+
+      
     cuenta_atras_meteo = 10;
     static char s_temp_text[] = "9999";
   	snprintf(s_temp_text, sizeof(s_temp_text), "%do", TEMPERATURA);
     text_layer_set_text(text_layer_letras, s_temp_text); 
-    static char s_icono_text[] = "9";
-  	snprintf(s_icono_text, sizeof(s_icono_text), "*");
+
     text_layer_set_text(text_layer_ano, s_icono_text);
+    layer_set_hidden(bitmap_layer_get_layer(separador_layer), true);
 }
 
 
@@ -120,7 +175,8 @@ void sacudida (AccelAxisType axis, int32_t direction) {
 
 static void in_recv_handler(DictionaryIterator *iterator, void *context)
   {
-  if (KEY_PIDE==1)
+  Tuple *key_pide_tuple = dict_find(iterator, KEY_PIDE);
+  if (key_pide_tuple->value->int8==1)
     {
     //Recibe los datos de configuración
     Tuple *key_idioma_tuple = dict_find(iterator, KEY_IDIOMA);
@@ -222,8 +278,8 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
 
 
     
-    TEMPERATURA = key_temperatura_tuple->value->int8; 
-    CONDICION = key_condicion_tuple->value->int8;
+    TEMPERATURA = key_temperatura_tuple->value->int16; 
+    CONDICION = key_condicion_tuple->value->int16;
 
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Temperatura %d - Condición %d", TEMPERATURA, CONDICION);
 
@@ -404,6 +460,8 @@ static void update_seconds(struct tm *tick_time) {
     {
      update_days (tick_time);
      update_years (tick_time);
+     layer_set_hidden(bitmap_layer_get_layer(separador_layer), false);
+
      cuenta_atras_meteo = -1;
     }
   
@@ -493,6 +551,9 @@ static void init(void) {
 
   layer_add_child(window_layer, bitmap_layer_get_layer(background_layer));
   
+  separador_layer = crea_capa_grafica(99, 42, RESOURCE_ID_IMAGE_SEPARADOR, 1);
+  layer_add_child(window_layer, bitmap_layer_get_layer(separador_layer));
+      
   porcentaje_layer = crea_capa_grafica(27, 41, RESOURCE_ID_IMAGE_TINY_PERCENT, 1);
   layer_add_child(window_layer, bitmap_layer_get_layer(porcentaje_layer));
   
@@ -599,6 +660,9 @@ static void deinit(void) {
   
   layer_remove_from_parent(bitmap_layer_get_layer(meter_bar_layer));
   bitmap_layer_destroy(meter_bar_layer);
+  
+  layer_remove_from_parent(bitmap_layer_get_layer(separador_layer));
+  bitmap_layer_destroy(separador_layer);
 	
   layer_remove_from_parent(bitmap_layer_get_layer(bluetooth_layer));
   bitmap_layer_destroy(bluetooth_layer);

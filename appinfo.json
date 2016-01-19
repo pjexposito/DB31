@@ -20,18 +20,27 @@
     "resources": {
         "media": [
             {
+                "file": "images/separador",
+                "name": "IMAGE_SEPARADOR",
+                "targetPlatforms": null,
+                "type": "bitmap"
+            },
+            {
                 "file": "images/fondocolor-sinsombras.png",
                 "name": "IMAGE_BACKGROUND_COLOR_NS",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/fondo-c.png",
                 "name": "IMAGE_BACKGROUND_COLOR",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
                 "file": "images/fondo.png",
                 "name": "IMAGE_BACKGROUND",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
@@ -78,6 +87,7 @@
             {
                 "file": "images/fondo-c2.png",
                 "name": "IMAGE_BACKGROUND_COLOR2",
+                "targetPlatforms": null,
                 "type": "bitmap"
             },
             {
@@ -120,7 +130,7 @@
         "basalt"
     ],
     "uuid": "a8336799-b197-4e3d-8afd-3290317c65b2",
-    "versionLabel": "1.91",
+    "versionLabel": "1.95",
     "watchapp": {
         "watchface": true
     }
