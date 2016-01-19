@@ -1,13 +1,17 @@
 {
     "appKeys": {
         "KEY_BACK": 5,
+        "KEY_CONDICION": 6,
         "KEY_DATEFORMAT": 2,
         "KEY_HOURLYVIBE": 4,
         "KEY_IDIOMA": 0,
+        "KEY_PIDE": 8,
         "KEY_SEGUNDOS": 3,
+        "KEY_TEMPERATURA": 7,
         "KEY_VIBE": 1
     },
     "capabilities": [
+        "location",
         "configurable"
     ],
     "companyName": "Pedro",
@@ -16,29 +20,65 @@
     "resources": {
         "media": [
             {
-                "file": "images/fondo-c2.png",
-                "name": "IMAGE_BACKGROUND_COLOR2",
-                "type": "png"
-            },
-            {
                 "file": "images/fondocolor-sinsombras.png",
                 "name": "IMAGE_BACKGROUND_COLOR_NS",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/fondo-c.png",
                 "name": "IMAGE_BACKGROUND_COLOR",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/fondo.png",
                 "name": "IMAGE_BACKGROUND",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/icon_meter.png",
                 "name": "IMAGE_METER_BAR",
-                "type": "png"
+                "type": "bitmap"
+            },
+            {
+                "file": "images/icon_bluetooth.png",
+                "name": "IMAGE_BLUETOOTH",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/time_format_24H.png",
+                "name": "IMAGE_24_HOUR_MODE",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/time_format_PM.png",
+                "name": "IMAGE_PM_MODE",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/bateriacargando.png",
+                "name": "IMAGE_BATTERY_CHARGE",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/bateria.png",
+                "name": "IMAGE_BATTERY",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/tiny_percent.png",
+                "name": "IMAGE_TINY_PERCENT",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/icono.png",
+                "menuIcon": true,
+                "name": "IMAGE_ICONO",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/fondo-c2.png",
+                "name": "IMAGE_BACKGROUND_COLOR2",
+                "type": "bitmap"
             },
             {
                 "characterRegex": "[0-9 :.]",
@@ -47,9 +87,10 @@
                 "type": "font"
             },
             {
-                "characterRegex": "[A-Z,0-9]",
+                "characterRegex": "[A-Z,0-9,o,',?,!,@,_,*]",
                 "file": "fonts/PBL_Letras.ttf",
                 "name": "FUENTE_LETRAS_24",
+                "targetPlatforms": null,
                 "type": "font"
             },
             {
@@ -69,42 +110,6 @@
                 "file": "fonts/PBL_Fecha.ttf",
                 "name": "FUENTE_FECHA_32",
                 "type": "font"
-            },
-            {
-                "file": "images/icono.png",
-                "menuIcon": true,
-                "name": "IMAGE_ICONO",
-                "type": "png"
-            },
-            {
-                "file": "images/icon_bluetooth.png",
-                "name": "IMAGE_BLUETOOTH",
-                "type": "png"
-            },
-            {
-                "file": "images/time_format_24H.png",
-                "name": "IMAGE_24_HOUR_MODE",
-                "type": "png"
-            },
-            {
-                "file": "images/time_format_PM.png",
-                "name": "IMAGE_PM_MODE",
-                "type": "png"
-            },
-            {
-                "file": "images/bateriacargando.png",
-                "name": "IMAGE_BATTERY_CHARGE",
-                "type": "png"
-            },
-            {
-                "file": "images/bateria.png",
-                "name": "IMAGE_BATTERY",
-                "type": "png"
-            },
-            {
-                "file": "images/tiny_percent.png",
-                "name": "IMAGE_TINY_PERCENT",
-                "type": "png"
             }
         ]
     },

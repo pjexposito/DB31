@@ -17,6 +17,9 @@
 #define KEY_SEGUNDOS 3
 #define KEY_HOURLYVIBE 4
 #define KEY_BACK 5
+#define KEY_CONDICION 6
+#define KEY_TEMPERATURA 7
+#define KEY_PIDE 8
   
 static Window *window;
 static Layer *window_layer;
@@ -29,6 +32,15 @@ int IDIOMA;
 // IDIOMA = 1, texto en español
 // IDIOMA = 2, texto en frances
   
+int TEMPERATURA, CONDICION;
+// Se guarda la temperatura y el icono de condición meteorológica
+
+int temporizador_meteo;
+// El temporizador para que cada 10 minutos pida los datos del tiempo
+
+int cuenta_atras_meteo;
+// Son los 10 segundos que pasan hasta que vuelve a mostrar de nuevo los datos de día y año
+
 static bool DATEFORMAT;
 // DATEFORMAT = True, Formato europeo (DD/MM/AAAA)
 // DATEFORMAT = False, Formato americano (MM/DD/AAAA)
@@ -82,20 +94,45 @@ static void carga_preferencias(void)
 
 static void handle_tick(struct tm *tick_time, TimeUnits units_changed);
 
+void pide_datos_tiempo()
+  {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Pidiendo datos");
+
+
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+  dict_write_int16(iter, KEY_PIDE, 0);    
+  app_message_outbox_send();
+}
+
+void sacudida (AccelAxisType axis, int32_t direction) {
+    cuenta_atras_meteo = 10;
+    static char s_temp_text[] = "9999";
+  	snprintf(s_temp_text, sizeof(s_temp_text), "%do", TEMPERATURA);
+    text_layer_set_text(text_layer_letras, s_temp_text); 
+    static char s_icono_text[] = "9";
+  	snprintf(s_icono_text, sizeof(s_icono_text), "*");
+    text_layer_set_text(text_layer_ano, s_icono_text);
+}
+
+
+
 
 static void in_recv_handler(DictionaryIterator *iterator, void *context)
   {
-  //Recibe los datos de configuración
-  Tuple *key_idioma_tuple = dict_find(iterator, KEY_IDIOMA);
-  Tuple *key_vibe_tuple = dict_find(iterator, KEY_VIBE);
-  Tuple *key_dateformat_tuple = dict_find(iterator, KEY_DATEFORMAT);
-  Tuple *key_segundos_tuple = dict_find(iterator, KEY_SEGUNDOS);
-  Tuple *key_hourlyvibe_tuple = dict_find(iterator, KEY_HOURLYVIBE);
-  Tuple *key_bw_tuple = dict_find(iterator, KEY_BACK);  
+  if (KEY_PIDE==1)
+    {
+    //Recibe los datos de configuración
+    Tuple *key_idioma_tuple = dict_find(iterator, KEY_IDIOMA);
+    Tuple *key_vibe_tuple = dict_find(iterator, KEY_VIBE);
+    Tuple *key_dateformat_tuple = dict_find(iterator, KEY_DATEFORMAT);
+    Tuple *key_segundos_tuple = dict_find(iterator, KEY_SEGUNDOS);
+    Tuple *key_hourlyvibe_tuple = dict_find(iterator, KEY_HOURLYVIBE);
+    Tuple *key_bw_tuple = dict_find(iterator, KEY_BACK);  
 
-  if(strcmp(key_idioma_tuple->value->cstring, "spanish") == 0)
-    persist_write_int(KEY_IDIOMA, 1);
-  else if(strcmp(key_idioma_tuple->value->cstring, "english") == 0)
+    if(strcmp(key_idioma_tuple->value->cstring, "spanish") == 0)
+      persist_write_int(KEY_IDIOMA, 1);
+    else if(strcmp(key_idioma_tuple->value->cstring, "english") == 0)
     persist_write_int(KEY_IDIOMA, 0);
   else if(strcmp(key_idioma_tuple->value->cstring, "french") == 0)
     persist_write_int(KEY_IDIOMA, 2);
@@ -160,24 +197,37 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
   layer_set_hidden(text_layer_get_layer(text_layer_segundos), !SEGUNDOS);
   
   
-  #ifdef PBL_COLOR 
-    if (BACK==0)
-      bitmap_layer_set_bitmap(background_layer, background_image);
-    else if (BACK==1) 
-      if (SEGUNDOS)
-        bitmap_layer_set_bitmap(background_layer, background_image_color);
-      else
-        bitmap_layer_set_bitmap(background_layer, background_image_color2);
-    else if (BACK==2) 
-      bitmap_layer_set_bitmap(background_layer, background_image_color_ns);  
-  #endif
+    #ifdef PBL_COLOR 
+      if (BACK==0)
+        bitmap_layer_set_bitmap(background_layer, background_image);
+      else if (BACK==1) 
+        if (SEGUNDOS)
+          bitmap_layer_set_bitmap(background_layer, background_image_color);
+        else
+          bitmap_layer_set_bitmap(background_layer, background_image_color2);
+      else if (BACK==2) 
+        bitmap_layer_set_bitmap(background_layer, background_image_color_ns);  
+    #endif
 
 
 
-  time_t now = time(NULL);
-  struct tm *tick_time = localtime(&now);  
-  handle_tick(tick_time, YEAR_UNIT + MONTH_UNIT + DAY_UNIT + HOUR_UNIT + MINUTE_UNIT + SECOND_UNIT);
+    time_t now = time(NULL);
+    struct tm *tick_time = localtime(&now);  
+    handle_tick(tick_time, YEAR_UNIT + MONTH_UNIT + DAY_UNIT + HOUR_UNIT + MINUTE_UNIT + SECOND_UNIT);
+  }
+  else
+    {
+    Tuple *key_temperatura_tuple = dict_find(iterator, KEY_TEMPERATURA);
+    Tuple *key_condicion_tuple = dict_find(iterator, KEY_CONDICION);
 
+
+    
+    TEMPERATURA = key_temperatura_tuple->value->int8; 
+    CONDICION = key_condicion_tuple->value->int8;
+
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Temperatura %d - Condición %d", TEMPERATURA, CONDICION);
+
+  }
 }
 
 
@@ -337,11 +387,26 @@ static void update_minutes(struct tm *tick_time) {
 	     strftime(s_time_text, sizeof(s_time_text), "%l:%M", tick_time);      
 
     text_layer_set_text(text_layer_hora, s_time_text);
+    temporizador_meteo++;
+    if (temporizador_meteo==10){
+      pide_datos_tiempo();
+      temporizador_meteo = 0;
+    }
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Hora es %s", s_time_text);
 
 }
 
 static void update_seconds(struct tm *tick_time) {
+  if (cuenta_atras_meteo>0)
+    cuenta_atras_meteo--;
+  
+  if (cuenta_atras_meteo==0)
+    {
+     update_days (tick_time);
+     update_years (tick_time);
+     cuenta_atras_meteo = -1;
+    }
+  
   if (SEGUNDOS)
   {
 	  static char s_time_text[] = "00";
@@ -374,11 +439,8 @@ static TextLayer* crea_capa_texto(GRect location, GColor colour, GColor backgrou
 static BitmapLayer* crea_capa_grafica(int x, int y, const uint8_t IMAGEN, bool Carga)
 {
   GBitmap *layer_image = gbitmap_create_with_resource(IMAGEN);
-  #ifdef PBL_PLATFORM_BASALT
     GRect bitmap_bounds = gbitmap_get_bounds(layer_image);
-  #else
-    GRect bitmap_bounds = layer_image->bounds;
-  #endif
+
   GRect frame = GRect(x, y, bitmap_bounds.size.w, bitmap_bounds.size.h);
   BitmapLayer *layer = bitmap_layer_create(frame);
   
@@ -390,6 +452,9 @@ static BitmapLayer* crea_capa_grafica(int x, int y, const uint8_t IMAGEN, bool C
 static void init(void) {
   
   carga_preferencias();
+  
+  TEMPERATURA = 0;
+  CONDICION = 0;
   
   window = window_create();
   if (window == NULL) {
@@ -514,12 +579,14 @@ static void init(void) {
   //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   app_message_register_inbox_received(in_recv_handler);
   app_message_open(64, 64);
+  accel_tap_service_subscribe (sacudida);
 
 }
 
 
 static void deinit(void) {
 
+  accel_tap_service_unsubscribe ();
   tick_timer_service_unsubscribe();
   bluetooth_connection_service_unsubscribe();
   battery_state_service_unsubscribe();
