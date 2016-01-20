@@ -72,7 +72,6 @@ function fetchWeather(latitude, longitude) {
                     }		 
                     condition = response.weather[0].id;
 
-                    temperature = -20;
 
                     console.log("Temperature: " + temperature + " Condition: " + condition);
                   Pebble.sendAppMessage({"KEY_PIDE":0, "KEY_CONDICION": condition,"KEY_TEMPERATURA": temperature});
