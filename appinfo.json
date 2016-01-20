@@ -20,12 +20,6 @@
     "resources": {
         "media": [
             {
-                "file": "images/separador",
-                "name": "IMAGE_SEPARADOR",
-                "targetPlatforms": null,
-                "type": "bitmap"
-            },
-            {
                 "file": "images/fondocolor-sinsombras.png",
                 "name": "IMAGE_BACKGROUND_COLOR_NS",
                 "targetPlatforms": null,
@@ -97,7 +91,7 @@
                 "type": "font"
             },
             {
-                "characterRegex": "[A-Z,0-9,o,',?,!,@,_,*]",
+                "characterRegex": "[A-Z,0-9,o,',?,!,@,_,*,#]",
                 "file": "fonts/PBL_Letras.ttf",
                 "name": "FUENTE_LETRAS_24",
                 "targetPlatforms": null,

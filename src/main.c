@@ -66,12 +66,10 @@ static GBitmap *background_image_color2;
 static GBitmap *background_image_color_ns;
 
 static GBitmap *battery_image;
-static GBitmap *separador_image;
 static GBitmap *time_format_image;
 static GBitmap *time_format_image24;
 
 static BitmapLayer *time_format_layer;
-static BitmapLayer *separador_layer;
 static BitmapLayer *background_layer;
 static BitmapLayer *meter_bar_layer;
 static BitmapLayer *bluetooth_layer;
@@ -167,7 +165,6 @@ void sacudida (AccelAxisType axis, int32_t direction) {
     text_layer_set_text(text_layer_letras, s_temp_text); 
 
     text_layer_set_text(text_layer_ano, s_icono_text);
-    layer_set_hidden(bitmap_layer_get_layer(separador_layer), true);
 }
 
 
@@ -414,9 +411,10 @@ static void update_months(struct tm *tick_time) {
 }
 
 static void update_years(struct tm *tick_time) {
-  static char s_time_text[] = "00";
-  strftime(s_time_text, sizeof(s_time_text), "%y", tick_time);
+  static char s_time_text[] = "000";
+  strftime(s_time_text, sizeof(s_time_text), "'%y", tick_time);
   text_layer_set_text(text_layer_ano, s_time_text);
+
 }
 
 static void update_hours(struct tm *tick_time) {
@@ -444,7 +442,7 @@ static void update_minutes(struct tm *tick_time) {
 
     text_layer_set_text(text_layer_hora, s_time_text);
     temporizador_meteo++;
-    if (temporizador_meteo==10){
+    if (temporizador_meteo==15){
       pide_datos_tiempo();
       temporizador_meteo = 0;
     }
@@ -460,7 +458,6 @@ static void update_seconds(struct tm *tick_time) {
     {
      update_days (tick_time);
      update_years (tick_time);
-     layer_set_hidden(bitmap_layer_get_layer(separador_layer), false);
 
      cuenta_atras_meteo = -1;
     }
@@ -510,7 +507,7 @@ static BitmapLayer* crea_capa_grafica(int x, int y, const uint8_t IMAGEN, bool C
 static void init(void) {
   
   carga_preferencias();
-  
+  temporizador_meteo = 0;
   TEMPERATURA = 0;
   CONDICION = 0;
   
@@ -550,10 +547,7 @@ static void init(void) {
 
 
   layer_add_child(window_layer, bitmap_layer_get_layer(background_layer));
-  
-  separador_layer = crea_capa_grafica(99, 42, RESOURCE_ID_IMAGE_SEPARADOR, 1);
-  layer_add_child(window_layer, bitmap_layer_get_layer(separador_layer));
-      
+
   porcentaje_layer = crea_capa_grafica(27, 41, RESOURCE_ID_IMAGE_TINY_PERCENT, 1);
   layer_add_child(window_layer, bitmap_layer_get_layer(porcentaje_layer));
   
@@ -597,11 +591,11 @@ static void init(void) {
   text_layer_fecha2 = crea_capa_texto(GRect(110, 62, 40, 40), GColorBlack, GColorClear, fuente_fecha, GTextAlignmentLeft);
 	layer_add_child(window_layer, text_layer_get_layer(text_layer_fecha2));
 
-  text_layer_letras = crea_capa_texto(GRect(41, 33, 70, 40), GColorBlack, GColorClear, fuente_letras, GTextAlignmentLeft);
+  text_layer_letras = crea_capa_texto(GRect(28, 33, 70, 40), GColorBlack, GColorClear, fuente_letras, GTextAlignmentRight);
 	layer_add_child(window_layer, text_layer_get_layer(text_layer_letras));
 
   
-  text_layer_ano = crea_capa_texto(GRect(102, 33, 70, 40), GColorBlack, GColorClear, fuente_letras, GTextAlignmentLeft);
+  text_layer_ano = crea_capa_texto(GRect(98, 33, 70, 40), GColorBlack, GColorClear, fuente_letras, GTextAlignmentLeft);
 	layer_add_child(window_layer, text_layer_get_layer(text_layer_ano));
 
   text_layer_bateria = crea_capa_texto(GRect(10, 41, 15, 15), GColorBlack, GColorClear, fuente_bateria, GTextAlignmentRight);
@@ -661,8 +655,6 @@ static void deinit(void) {
   layer_remove_from_parent(bitmap_layer_get_layer(meter_bar_layer));
   bitmap_layer_destroy(meter_bar_layer);
   
-  layer_remove_from_parent(bitmap_layer_get_layer(separador_layer));
-  bitmap_layer_destroy(separador_layer);
 	
   layer_remove_from_parent(bitmap_layer_get_layer(bluetooth_layer));
   bitmap_layer_destroy(bluetooth_layer);
