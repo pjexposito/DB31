@@ -24,7 +24,7 @@
 static Window *window;
 static Layer *window_layer;
 static uint8_t batteryPercent;
-static TextLayer *text_layer_hora, *text_layer_segundos, *text_layer_fecha1, *text_layer_fecha2, *text_layer_letras, *text_layer_ano, *text_layer_bateria;
+static TextLayer *text_layer_hora, *text_layer_segundos, *text_layer_fecha1, *text_layer_fecha2, *text_layer_letras, *text_layer_bateria;
 
 
 int IDIOMA;  
@@ -160,11 +160,10 @@ void sacudida (AccelAxisType axis, int32_t direction) {
 
       
     cuenta_atras_meteo = 10;
-    static char s_temp_text[] = "9999";
-  	snprintf(s_temp_text, sizeof(s_temp_text), "%do", TEMPERATURA);
+    static char s_temp_text[] = "000000";
+  	snprintf(s_temp_text, sizeof(s_temp_text), "%do%s", TEMPERATURA,s_icono_text);
     text_layer_set_text(text_layer_letras, s_temp_text); 
 
-    text_layer_set_text(text_layer_ano, s_icono_text);
 }
 
 
@@ -352,33 +351,42 @@ static void update_days(struct tm *tick_time) {
   const char *dias_pt[] = {"DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"};
   const char *dias_nl[] = {"ZON", "MAA", "DIN", "WOE", "DON", "VRI", "ZAT"};
 
+  static char texto_dia[] = "000";
+  static char texto_ano[] = "000";
+  static char texto_dia_ano[] = "000000";
+  strftime(texto_ano, sizeof(texto_ano), "'%y", tick_time);
+
   switch (IDIOMA)
   {
   case 0:
-    text_layer_set_text(text_layer_letras, dias_en[tick_time->tm_wday]); 
+    snprintf(texto_dia, sizeof(texto_dia), "%s", dias_en[tick_time->tm_wday]);
     break;
   case 1:
-    text_layer_set_text(text_layer_letras, dias_es[tick_time->tm_wday]); 
+    snprintf(texto_dia, sizeof(texto_dia), "%s", dias_es[tick_time->tm_wday]);
     break;
   case 2:
-    text_layer_set_text(text_layer_letras, dias_fr[tick_time->tm_wday]); 
+    snprintf(texto_dia, sizeof(texto_dia), "%s", dias_fr[tick_time->tm_wday]);
     break;    
   case 3:
-    text_layer_set_text(text_layer_letras, dias_de[tick_time->tm_wday]); 
+    snprintf(texto_dia, sizeof(texto_dia), "%s", dias_de[tick_time->tm_wday]);
     break;   
   case 4:
-    text_layer_set_text(text_layer_letras, dias_it[tick_time->tm_wday]); 
+    snprintf(texto_dia, sizeof(texto_dia), "%s", dias_it[tick_time->tm_wday]);
     break;   
   case 5:
-    text_layer_set_text(text_layer_letras, dias_pt[tick_time->tm_wday]); 
+    snprintf(texto_dia, sizeof(texto_dia), "%s", dias_pt[tick_time->tm_wday]);
     break;  
   case 6:
-    text_layer_set_text(text_layer_letras, dias_nl[tick_time->tm_wday]); 
+    snprintf(texto_dia, sizeof(texto_dia), "%s", dias_nl[tick_time->tm_wday]);
     break;     
   default:
-    text_layer_set_text(text_layer_letras, dias_en[tick_time->tm_wday]); 
+    snprintf(texto_dia, sizeof(texto_dia), "%s", dias_en[tick_time->tm_wday]);
     break;    
   }
+
+  snprintf(texto_dia_ano, sizeof(texto_dia_ano), "%s%s", texto_dia, texto_ano);
+
+  text_layer_set_text(text_layer_letras, texto_dia_ano); 
 
   if (DATEFORMAT)
     {
@@ -410,12 +418,6 @@ static void update_months(struct tm *tick_time) {
     
 }
 
-static void update_years(struct tm *tick_time) {
-  static char s_time_text[] = "000";
-  strftime(s_time_text, sizeof(s_time_text), "'%y", tick_time);
-  text_layer_set_text(text_layer_ano, s_time_text);
-
-}
 
 static void update_hours(struct tm *tick_time) {
   if(appStarted && HourlyVibe) {
@@ -457,7 +459,6 @@ static void update_seconds(struct tm *tick_time) {
   if (cuenta_atras_meteo==0)
     {
      update_days (tick_time);
-     update_years (tick_time);
 
      cuenta_atras_meteo = -1;
     }
@@ -472,7 +473,6 @@ static void update_seconds(struct tm *tick_time) {
 }
 
 static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
-  if (units_changed & YEAR_UNIT) update_years(tick_time);
   if (units_changed & MONTH_UNIT) update_months(tick_time);
   if (units_changed & DAY_UNIT) update_days(tick_time);
   if (units_changed & HOUR_UNIT) update_hours(tick_time);
@@ -591,12 +591,8 @@ static void init(void) {
   text_layer_fecha2 = crea_capa_texto(GRect(110, 62, 40, 40), GColorBlack, GColorClear, fuente_fecha, GTextAlignmentLeft);
 	layer_add_child(window_layer, text_layer_get_layer(text_layer_fecha2));
 
-  text_layer_letras = crea_capa_texto(GRect(28, 33, 70, 40), GColorBlack, GColorClear, fuente_letras, GTextAlignmentRight);
+  text_layer_letras = crea_capa_texto(GRect(24, 33, 110, 40), GColorBlack, GColorClear, fuente_letras, GTextAlignmentRight);
 	layer_add_child(window_layer, text_layer_get_layer(text_layer_letras));
-
-  
-  text_layer_ano = crea_capa_texto(GRect(98, 33, 70, 40), GColorBlack, GColorClear, fuente_letras, GTextAlignmentLeft);
-	layer_add_child(window_layer, text_layer_get_layer(text_layer_ano));
 
   text_layer_bateria = crea_capa_texto(GRect(10, 41, 15, 15), GColorBlack, GColorClear, fuente_bateria, GTextAlignmentRight);
 	layer_add_child(window_layer, text_layer_get_layer(text_layer_bateria));
@@ -676,7 +672,6 @@ static void deinit(void) {
   text_layer_destroy(text_layer_segundos);
   text_layer_destroy(text_layer_fecha1);
   text_layer_destroy(text_layer_letras);
-  text_layer_destroy(text_layer_ano);
   text_layer_destroy(text_layer_fecha2);
   text_layer_destroy(text_layer_bateria);
 	
