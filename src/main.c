@@ -55,6 +55,9 @@ static bool HourlyVibe;
 // True muestra el segundero. Con False, desaparece.
 static bool SEGUNDOS;
 
+static bool NOCHE;
+
+
 // 0 muestra el fondo en blanco y negro. 1 se muestra en color. 2, en color sin sombras
 static int BACK;
 
@@ -106,7 +109,9 @@ void pide_datos_tiempo()
 }
 
 void sacudida (AccelAxisType axis, int32_t direction) {
-
+    // SI SE CONSIGUEN DATOS, MUESTRA EL TIEMPO. 200 significa que no hay datos
+    if (TEMPERATURA!=200)
+    {  
     // Según la fuente que he creado:
     // ? = Lluvia
     // * = Sol
@@ -139,7 +144,10 @@ void sacudida (AccelAxisType axis, int32_t direction) {
     else if (CONDICION == 800)
       {
           APP_LOG(APP_LOG_LEVEL_DEBUG, "Soleado");
-        	snprintf(s_icono_text, sizeof(s_icono_text), "*");
+          if (NOCHE)
+        	  snprintf(s_icono_text, sizeof(s_icono_text), "*");
+          else
+        	  snprintf(s_icono_text, sizeof(s_icono_text), "c");
 
       }
     else if (CONDICION == 801)
@@ -178,7 +186,7 @@ void sacudida (AccelAxisType axis, int32_t direction) {
     static char s_temp_text[] = "000000";
   	snprintf(s_temp_text, sizeof(s_temp_text), "%do%s", TEMPERATURA,s_icono_text);
     text_layer_set_text(text_layer_letras, s_temp_text); 
-
+    }
 }
 
 
@@ -438,6 +446,14 @@ static void update_hours(struct tm *tick_time) {
   if(appStarted && HourlyVibe) {
     vibes_short_pulse();
   }
+  if ((tick_time->tm_hour >= 21) || (tick_time->tm_hour <= 7)) {
+    NOCHE = 1;
+  }
+  else
+    {
+    NOCHE = 0;
+  }
+ 
   if (!clock_is_24h_style()) {
     if (tick_time->tm_hour >= 12) {
           bitmap_layer_set_bitmap(time_format_layer, time_format_image); 
@@ -523,8 +539,9 @@ static void init(void) {
   
   carga_preferencias();
   temporizador_meteo = 0;
-  TEMPERATURA = 0;
+  TEMPERATURA = 200;
   CONDICION = 0;
+  NOCHE = 0;
   
   window = window_create();
   if (window == NULL) {
