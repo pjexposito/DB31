@@ -114,6 +114,9 @@ void sacudida (AccelAxisType axis, int32_t direction) {
     // @ = Nubes
     // _ = Niebla
     // ' = Tormenta
+    // c = Luna
+    // $ = Muy nuboso
+    // + = Nieve
     static char s_icono_text[] = "9";
     if ((CONDICION >= 200) && (CONDICION<=232))
       {
@@ -139,16 +142,28 @@ void sacudida (AccelAxisType axis, int32_t direction) {
         	snprintf(s_icono_text, sizeof(s_icono_text), "*");
 
       }
-    else if ((CONDICION >= 801) && (CONDICION<=804))
+    else if (CONDICION == 801)
       {
           APP_LOG(APP_LOG_LEVEL_DEBUG, "Nublado");
         	snprintf(s_icono_text, sizeof(s_icono_text), "@");
+
+      }
+    else if ((CONDICION > 801) && (CONDICION<=804))
+      {
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Muy nublado");
+        	snprintf(s_icono_text, sizeof(s_icono_text), "$");
 
       }
     else if ((CONDICION >= 701) && (CONDICION<=781))
       {
           APP_LOG(APP_LOG_LEVEL_DEBUG, "Niebla");
         	snprintf(s_icono_text, sizeof(s_icono_text), "_");
+
+      }
+    else if ((CONDICION >= 600) && (CONDICION<=622))
+      {
+          APP_LOG(APP_LOG_LEVEL_DEBUG, "Nieve");
+        	snprintf(s_icono_text, sizeof(s_icono_text), "+");
 
       }
     else

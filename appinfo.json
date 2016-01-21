@@ -91,7 +91,7 @@
                 "type": "font"
             },
             {
-                "characterRegex": "[A-Z,0-9,o,',?,!,@,_,*,#,-]",
+                "characterRegex": "[A-Z,0-9,c,o,',?,!,@,_,*,#,-,$,+]",
                 "file": "fonts/PBL_Letras.ttf",
                 "name": "FUENTE_LETRAS_24",
                 "targetPlatforms": null,
