@@ -145,9 +145,9 @@ void sacudida (AccelAxisType axis, int32_t direction) {
       {
           APP_LOG(APP_LOG_LEVEL_DEBUG, "Soleado");
           if (NOCHE)
-        	  snprintf(s_icono_text, sizeof(s_icono_text), "*");
-          else
         	  snprintf(s_icono_text, sizeof(s_icono_text), "c");
+          else
+        	  snprintf(s_icono_text, sizeof(s_icono_text), "*");
 
       }
     else if (CONDICION == 801)
@@ -182,7 +182,7 @@ void sacudida (AccelAxisType axis, int32_t direction) {
       }
 
       
-    cuenta_atras_meteo = 10;
+    cuenta_atras_meteo = 6; //Muestra durante 6 segundos
     static char s_temp_text[] = "000000";
   	snprintf(s_temp_text, sizeof(s_temp_text), "%do%s", TEMPERATURA,s_icono_text);
     text_layer_set_text(text_layer_letras, s_temp_text); 
