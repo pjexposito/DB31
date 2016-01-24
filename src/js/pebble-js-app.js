@@ -1,12 +1,14 @@
 Pebble.addEventListener('ready', function() {
-  console.log('PebbleKit JS ready!');
+  //console.log('PebbleKit JS ready!');
+  updateWeather();
 
 
 
 });
 
-Pebble.addEventListener("appmessage", function(e) {
-    //console.log("Got a message - Starting weather request...");
+Pebble.addEventListener('appmessage', function(e) {
+    //console.log("Recibido. Pidiendo datos...");
+    
     updateWeather();
 });
 
@@ -74,7 +76,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
     meteo = 0;
   
   envio = ""+idioma+vibe+dateformat+segundos+hourlyvibe+back+meteo;
-  console.log(envio);
+  //console.log(envio);
   Pebble.sendAppMessage({"KEY_PIDE":1, "KEY_CONFIGURACION":envio });
   //Pebble.sendAppMessage({"KEY_PIDE":1, "KEY_IDIOMA": configData.idioma, "KEY_VIBE": configData.vibe, "KEY_DATEFORMAT": configData.dateformat,"KEY_SEGUNDOS": configData.segundos,"KEY_HOURLYVIBE": configData.hourlyvibe,"KEY_BACK": configData.back}); 
 });
@@ -100,13 +102,13 @@ function locationSuccess(pos) {
 
 function locationError(err) {
     //console.warn('Location error (' + err.code + '): ' + err.message);
-  console.log("Error de localizacion");  
+  //console.log("Error de localizacion");  
   Pebble.sendAppMessage({ "error": "Loc unavailable" });
     updateInProgress = false;
 }
 
 function fetchWeather(latitude, longitude) {
-    console.log(latitude + " " + longitude);
+   // console.log(latitude + " " + longitude);
     var response;
     var req = new XMLHttpRequest();
     req.open('GET', "http://api.openweathermap.org/data/2.5/weather?" +
@@ -130,15 +132,15 @@ function fetchWeather(latitude, longitude) {
                     condition = response.weather[0].id;
 
 
-                    console.log("Temperature: " + temperature + " Condition: " + condition);
+                    //console.log("Temperature: " + temperature + " Condition: " + condition);
                   Pebble.sendAppMessage({"KEY_PIDE":0, "KEY_CONDICION": condition,"KEY_TEMPERATURA": temperature});
                     updateInProgress = false;
                 }
             } else {
                 //console.log("Error");
                 updateInProgress = false;
-              console.log("Error de HTTP");
-                Pebble.sendAppMessage({ "error": "HTTP Error" });
+              //console.log("Error de HTTP");
+                  Pebble.sendAppMessage({"KEY_PIDE":0, "KEY_CONDICION": 1,"KEY_TEMPERATURA": 200});
             }
         }
     };

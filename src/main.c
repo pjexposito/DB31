@@ -109,18 +109,18 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed);
 
 void pide_datos_tiempo()
   {
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Pidiendo datos");
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Pidiendo datos");
+    DictionaryIterator *iter;
+    app_message_outbox_begin(&iter);
+    Tuplet value = TupletInteger(KEY_PIDE, 0);
+    dict_write_tuplet(iter, &value); 
+    app_message_outbox_send();
 
-
-  DictionaryIterator *iter;
-  app_message_outbox_begin(&iter);
-  dict_write_int16(iter, KEY_PIDE, 0);    
-  app_message_outbox_send();
 }
 
 void sacudida (AccelAxisType axis, int32_t direction) {
     // SI SE CONSIGUEN DATOS, MUESTRA EL TIEMPO. 200 significa que no hay datos
-    if (TEMPERATURA!=200)
+    if ((TEMPERATURA!=200) && (SHOW_METEO))
     {  
     // Según la fuente que he creado:
     // ? = Lluvia
@@ -135,25 +135,25 @@ void sacudida (AccelAxisType axis, int32_t direction) {
     static char s_icono_text[] = "9";
     if ((CONDICION >= 200) && (CONDICION<=232))
       {
-         APP_LOG(APP_LOG_LEVEL_DEBUG, "Tormenta");
+         //APP_LOG(APP_LOG_LEVEL_DEBUG, "Tormenta");
          snprintf(s_icono_text, sizeof(s_icono_text), "'");
 
       }
     else if (((CONDICION >= 300) && (CONDICION<=321)) || ((CONDICION >= 500) && (CONDICION<=531)))
       {
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Lluvia");
+          //APP_LOG(APP_LOG_LEVEL_DEBUG, "Lluvia");
       	  snprintf(s_icono_text, sizeof(s_icono_text), "?");
 
       }
     else if ((CONDICION >= 600) && (CONDICION<=622))
       {
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Nieve");
+          //APP_LOG(APP_LOG_LEVEL_DEBUG, "Nieve");
         	snprintf(s_icono_text, sizeof(s_icono_text), "_");
 
       }
     else if (CONDICION == 800)
       {
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Soleado");
+          //APP_LOG(APP_LOG_LEVEL_DEBUG, "Soleado");
           if (NOCHE)
         	  snprintf(s_icono_text, sizeof(s_icono_text), "c");
           else
@@ -162,31 +162,31 @@ void sacudida (AccelAxisType axis, int32_t direction) {
       }
     else if (CONDICION == 801)
       {
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Nublado");
+          //APP_LOG(APP_LOG_LEVEL_DEBUG, "Nublado");
         	snprintf(s_icono_text, sizeof(s_icono_text), "@");
 
       }
     else if ((CONDICION > 801) && (CONDICION<=804))
       {
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Muy nublado");
+          //APP_LOG(APP_LOG_LEVEL_DEBUG, "Muy nublado");
         	snprintf(s_icono_text, sizeof(s_icono_text), "$");
 
       }
     else if ((CONDICION >= 701) && (CONDICION<=781))
       {
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Niebla");
+          //APP_LOG(APP_LOG_LEVEL_DEBUG, "Niebla");
         	snprintf(s_icono_text, sizeof(s_icono_text), "_");
 
       }
     else if ((CONDICION >= 600) && (CONDICION<=622))
       {
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Nieve");
+          //APP_LOG(APP_LOG_LEVEL_DEBUG, "Nieve");
         	snprintf(s_icono_text, sizeof(s_icono_text), "+");
 
       }
     else
       {
-          APP_LOG(APP_LOG_LEVEL_DEBUG, "Otros");
+          //APP_LOG(APP_LOG_LEVEL_DEBUG, "Otros");
         	snprintf(s_icono_text, sizeof(s_icono_text), "*");
 
       }
@@ -206,7 +206,7 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
   {
 
   Tuple *key_pide_tuple = dict_find(iterator, KEY_PIDE);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Entra en recibe. Valor de KEY_PIDE: %d", key_pide_tuple->value->int8);
+  //APP_LOG(APP_LOG_LEVEL_DEBUG, "Entra en recibe. Valor de KEY_PIDE: %d", key_pide_tuple->value->int8);
 
   if (key_pide_tuple->value->int8==1)
     {
@@ -324,9 +324,7 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
         bitmap_layer_set_bitmap(background_layer, background_image_color_ns);  
     #endif
 
-    if (!SHOW_METEO)
-      TEMPERATURA = 200;
-    else
+    if (SHOW_METEO)
       pide_datos_tiempo();
 
 
@@ -344,7 +342,7 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     TEMPERATURA = key_temperatura_tuple->value->int16; 
     CONDICION = key_condicion_tuple->value->int16;
 
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "Temperatura %d - Condición %d", TEMPERATURA, CONDICION);
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Temperatura %d - Condición %d", TEMPERATURA, CONDICION);
 
   }
 }
@@ -518,7 +516,8 @@ static void update_minutes(struct tm *tick_time) {
 	     strftime(s_time_text, sizeof(s_time_text), "%l:%M", tick_time);      
 
     text_layer_set_text(text_layer_hora, s_time_text);
-  
+      //APP_LOG(APP_LOG_LEVEL_DEBUG, "SHOW_METEO vale: %d. Temp_meteo vale: %d", SHOW_METEO, temporizador_meteo);
+
     if (SHOW_METEO)
       {
       temporizador_meteo++;
@@ -585,7 +584,7 @@ static BitmapLayer* crea_capa_grafica(int x, int y, const uint8_t IMAGEN, bool C
 }
 
 static void init(void) {
-  
+  TEMPERATURA = 200;
   carga_preferencias();
   temporizador_meteo = 0;
   CONDICION = 0;
@@ -713,10 +712,6 @@ static void init(void) {
   //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());		
 
   accel_tap_service_subscribe (sacudida);
-  if (!SHOW_METEO)
-      TEMPERATURA = 200;
-  else
-      pide_datos_tiempo();
 }
 
 
