@@ -1,6 +1,5 @@
 Pebble.addEventListener('ready', function() {
   console.log('PebbleKit JS ready!');
-  updateWeather();
 
 
 
@@ -12,14 +11,72 @@ Pebble.addEventListener("appmessage", function(e) {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  var url = 'https://dl.dropboxusercontent.com/u/119376/config-time/index.html';
+  var url = 'https://dl.dropboxusercontent.com/u/119376/config-time/index_meteo.html';
 
   Pebble.openURL(url);
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {
   var configData = JSON.parse(decodeURIComponent(e.response));
-  Pebble.sendAppMessage({"KEY_PIDE":1, "KEY_IDIOMA": configData.idioma,"KEY_VIBE": configData.vibe, "KEY_DATEFORMAT": configData.dateformat,"KEY_SEGUNDOS": configData.segundos,"KEY_HOURLYVIBE": configData.hourlyvibe,"KEY_BACK": configData.back }); 
+  var idioma, vibe, dateformat, segundos, hourlyvibe, back, envio, meteo;
+  //console.log("Idioma: " +  configData.idioma + ", vibe: " + configData.vibe + ", Dateformat: " + configData.dateformat + ", segundos: " + configData.segundos + ", hourlyvibe: " + configData.hourlyvibe + ", background: " + configData.back);
+
+  
+  if (configData.idioma == "english")
+    idioma = 0;
+  if (configData.idioma == "spanish")
+    idioma = 1;
+  else if (configData.idioma == "french")
+    idioma = 2;
+  else if (configData.idioma == "german")
+    idioma = 3;
+  else if (configData.idioma == "italian")
+    idioma = 4;
+  else if (configData.idioma == "portuguese")
+    idioma = 5;
+  else if (configData.idioma == "dutch")
+    idioma = 6;
+  else 
+    idioma = 0;
+  
+  if (configData.vibe == "on")
+    vibe = 1;
+  else
+    vibe = 0;
+  
+  if (configData.dateformat == "DDMM")
+    dateformat = 1;
+  else
+    dateformat = 0; 
+  
+  if (configData.segundos == "on")
+    segundos = 1;
+  else
+    segundos = 0; 
+  
+  if (configData.hourlyvibe == "on")
+    hourlyvibe = 1;
+  else
+    hourlyvibe = 0; 
+  
+  if (configData.back == "bw")
+    back = 0;
+  else if (configData.back == "color")
+    back = 1; 
+  else if (configData.back == "ns")
+    back = 2;
+  else 
+    back = 0;
+  
+  if (configData.meteo == "on")
+    meteo = 1;
+  else 
+    meteo = 0;
+  
+  envio = ""+idioma+vibe+dateformat+segundos+hourlyvibe+back+meteo;
+  console.log(envio);
+  Pebble.sendAppMessage({"KEY_PIDE":1, "KEY_CONFIGURACION":envio });
+  //Pebble.sendAppMessage({"KEY_PIDE":1, "KEY_IDIOMA": configData.idioma, "KEY_VIBE": configData.vibe, "KEY_DATEFORMAT": configData.dateformat,"KEY_SEGUNDOS": configData.segundos,"KEY_HOURLYVIBE": configData.hourlyvibe,"KEY_BACK": configData.back}); 
 });
 
 var updateInProgress = false;

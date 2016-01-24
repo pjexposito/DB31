@@ -1,3 +1,7 @@
+// REVISAR. SE ENVIA MUCHA INFORMACION. DEBE SER MAS PEQUEÑA LA CADENA DE CONFIGURACION
+
+
+
 // Gráficos de los iconos adaptados de http://icons.primail.ch/index.php?page=iconset_weather
 // Código del tiempo adaptado de https://github.com/Niknam/futura-weather-sdk2.0.
 // Lo anteriormente mencionado ya no se usa en esta version
@@ -20,6 +24,8 @@
 #define KEY_CONDICION 6
 #define KEY_TEMPERATURA 7
 #define KEY_PIDE 8
+#define KEY_SHOW_METEO 9
+#define KEY_CONFIGURACION 10
   
 static Window *window;
 static Layer *window_layer;
@@ -45,6 +51,8 @@ static bool DATEFORMAT;
 // DATEFORMAT = True, Formato europeo (DD/MM/AAAA)
 // DATEFORMAT = False, Formato americano (MM/DD/AAAA)
   
+static bool SHOW_METEO;
+// Si es True, muestra información meteorológica. Si es False, no
 
 // Vibra al perder la conexión BT. True es si, false es no.
 static bool BluetoothVibe;
@@ -83,6 +91,8 @@ static BitmapLayer *battery_layer;
 GFont fuente_hora, fuente_segundos, fuente_fecha, fuente_letras, fuente_bateria;
 
 
+
+
 static void carga_preferencias(void)
   { 
     // Carga las preferencias
@@ -92,7 +102,7 @@ static void carga_preferencias(void)
     SEGUNDOS = persist_exists(KEY_SEGUNDOS) ? persist_read_bool(KEY_SEGUNDOS) : 1;
     HourlyVibe = persist_exists(KEY_HOURLYVIBE) ? persist_read_bool(KEY_HOURLYVIBE) : 0;
     BACK = persist_exists(KEY_BACK) ? persist_read_int(KEY_BACK) : 0;
-  
+    SHOW_METEO = persist_exists(KEY_SHOW_METEO) ? persist_read_int(KEY_SHOW_METEO) : 1;
   }
 
 static void handle_tick(struct tm *tick_time, TimeUnits units_changed);
@@ -194,20 +204,37 @@ void sacudida (AccelAxisType axis, int32_t direction) {
 
 static void in_recv_handler(DictionaryIterator *iterator, void *context)
   {
+
   Tuple *key_pide_tuple = dict_find(iterator, KEY_PIDE);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Entra en recibe. Valor de KEY_PIDE: %d", key_pide_tuple->value->int8);
+
   if (key_pide_tuple->value->int8==1)
     {
     //Recibe los datos de configuración
-    Tuple *key_idioma_tuple = dict_find(iterator, KEY_IDIOMA);
-    Tuple *key_vibe_tuple = dict_find(iterator, KEY_VIBE);
-    Tuple *key_dateformat_tuple = dict_find(iterator, KEY_DATEFORMAT);
-    Tuple *key_segundos_tuple = dict_find(iterator, KEY_SEGUNDOS);
-    Tuple *key_hourlyvibe_tuple = dict_find(iterator, KEY_HOURLYVIBE);
-    Tuple *key_bw_tuple = dict_find(iterator, KEY_BACK);  
+    Tuple *key_configuracion_tuple = dict_find(iterator, KEY_CONFIGURACION);
+    static char config[] = "0000000";
+  	snprintf(config, sizeof(config), "%s", key_configuracion_tuple->value->cstring);
 
-    if(strcmp(key_idioma_tuple->value->cstring, "spanish") == 0)
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Recibido: %s", config);
+    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Separado: %c %c %c %c %c %c", config[0], config[1], config[2], config[3], config[4], config[5]);
+
+    
+    persist_write_int(KEY_IDIOMA, ((int)config[0]-48));
+    persist_write_int(KEY_VIBE, ((int)config[1]-48));
+    persist_write_int(KEY_DATEFORMAT, ((int)config[2]-48));
+    persist_write_int(KEY_SEGUNDOS, ((int)config[3]-48));
+    persist_write_int(KEY_HOURLYVIBE, ((int)config[4]-48));
+    persist_write_int(KEY_BACK, ((int)config[5]-48));
+    persist_write_int(KEY_SHOW_METEO, ((int)config[6]-48));
+
+   // APP_LOG(APP_LOG_LEVEL_DEBUG, "Idioma guardado: %i", (int)persist_read_int(KEY_IDIOMA));
+
+
+    
+/*
+  if(strcmp(key_idioma_tuple->value->cstring, "spanish") == 0)
       persist_write_int(KEY_IDIOMA, 1);
-    else if(strcmp(key_idioma_tuple->value->cstring, "english") == 0)
+  else if(strcmp(key_idioma_tuple->value->cstring, "english") == 0)
     persist_write_int(KEY_IDIOMA, 0);
   else if(strcmp(key_idioma_tuple->value->cstring, "french") == 0)
     persist_write_int(KEY_IDIOMA, 2);
@@ -236,7 +263,12 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
   if(strcmp(key_segundos_tuple->value->cstring, "on") == 0)
       persist_write_bool(KEY_SEGUNDOS, 1);
   else if(strcmp(key_segundos_tuple->value->cstring, "off") == 0)
-      persist_write_bool(KEY_SEGUNDOS, 0);     
+      persist_write_bool(KEY_SEGUNDOS, 0); 
+  
+  if(strcmp(key_show_meteo_tuple->value->cstring, "on") == 0)
+      persist_write_bool(KEY_SHOW_METEO, 1);
+  else if(strcmp(key_show_meteo_tuple->value->cstring, "off") == 0)
+      persist_write_bool(KEY_SHOW_METEO, 0);     
     
   if(strcmp(key_hourlyvibe_tuple->value->cstring, "on") == 0)
      persist_write_bool(KEY_HOURLYVIBE, 1);
@@ -250,10 +282,18 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
   else if(strcmp(key_bw_tuple->value->cstring, "ns") == 0)
      persist_write_int(KEY_BACK, 2);  
   
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Meteo es %i", KEY_SHOW_METEO);
+
   // Vuelve a dibujar el reloj tras cerrar las preferencias
   carga_preferencias();
+    
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Meteo es %i", KEY_SHOW_METEO);
+*/
+
+  carga_preferencias();
+
   
-    if (BluetoothVibe)
+  if (BluetoothVibe)
     layer_set_hidden(bitmap_layer_get_layer(meter_bar_layer), false);
   else
     layer_set_hidden(bitmap_layer_get_layer(meter_bar_layer), true);
@@ -284,6 +324,10 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
         bitmap_layer_set_bitmap(background_layer, background_image_color_ns);  
     #endif
 
+    if (!SHOW_METEO)
+      TEMPERATURA = 200;
+    else
+      pide_datos_tiempo();
 
 
     time_t now = time(NULL);
@@ -338,7 +382,7 @@ static void update_battery(BatteryChargeState charge_state) {
   layer_set_hidden(bitmap_layer_get_layer(porcentaje_layer),charge_state.is_charging);
 
   static char s_time_text[] = "00";
-  snprintf(s_time_text, sizeof(s_time_text), "%i", charge_state.charge_percent);
+  snprintf(s_time_text, sizeof(s_time_text), "%d", charge_state.charge_percent);
   text_layer_set_text(text_layer_bateria, s_time_text); 
 }
 
@@ -474,11 +518,16 @@ static void update_minutes(struct tm *tick_time) {
 	     strftime(s_time_text, sizeof(s_time_text), "%l:%M", tick_time);      
 
     text_layer_set_text(text_layer_hora, s_time_text);
-    temporizador_meteo++;
-    if (temporizador_meteo==15){
-      pide_datos_tiempo();
-      temporizador_meteo = 0;
-    }
+  
+    if (SHOW_METEO)
+      {
+      temporizador_meteo++;
+      if (temporizador_meteo==15)
+        {
+        pide_datos_tiempo();
+        temporizador_meteo = 0;
+        }
+      }
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Hora es %s", s_time_text);
 
 }
@@ -539,7 +588,6 @@ static void init(void) {
   
   carga_preferencias();
   temporizador_meteo = 0;
-  TEMPERATURA = 200;
   CONDICION = 0;
   NOCHE = 0;
   
@@ -662,8 +710,13 @@ static void init(void) {
   //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   app_message_register_inbox_received(in_recv_handler);
   app_message_open(64, 64);
-  accel_tap_service_subscribe (sacudida);
+  //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());		
 
+  accel_tap_service_subscribe (sacudida);
+  if (!SHOW_METEO)
+      TEMPERATURA = 200;
+  else
+      pide_datos_tiempo();
 }
 
 

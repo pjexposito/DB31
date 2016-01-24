@@ -2,11 +2,13 @@
     "appKeys": {
         "KEY_BACK": 5,
         "KEY_CONDICION": 6,
+        "KEY_CONFIGURACION": 10,
         "KEY_DATEFORMAT": 2,
         "KEY_HOURLYVIBE": 4,
         "KEY_IDIOMA": 0,
         "KEY_PIDE": 8,
         "KEY_SEGUNDOS": 3,
+        "KEY_SHOW_METEO": 9,
         "KEY_TEMPERATURA": 7,
         "KEY_VIBE": 1
     },
