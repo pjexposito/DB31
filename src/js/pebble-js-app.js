@@ -1,14 +1,13 @@
+var updateInProgress = false;
+
+
 Pebble.addEventListener('ready', function() {
   //console.log('PebbleKit JS ready!');
   updateWeather();
-
-
-
 });
 
 Pebble.addEventListener('appmessage', function(e) {
-    //console.log("Recibido. Pidiendo datos...");
-    
+    //console.log("Recibido. Pidiendo datos..."); 
     updateWeather();
 });
 
@@ -81,7 +80,6 @@ Pebble.addEventListener('webviewclosed', function(e) {
   //Pebble.sendAppMessage({"KEY_PIDE":1, "KEY_IDIOMA": configData.idioma, "KEY_VIBE": configData.vibe, "KEY_DATEFORMAT": configData.dateformat,"KEY_SEGUNDOS": configData.segundos,"KEY_HOURLYVIBE": configData.hourlyvibe,"KEY_BACK": configData.back}); 
 });
 
-var updateInProgress = false;
 
 function updateWeather() {
     if (!updateInProgress) {
@@ -103,7 +101,7 @@ function locationSuccess(pos) {
 function locationError(err) {
     //console.warn('Location error (' + err.code + '): ' + err.message);
   //console.log("Error de localizacion");  
-  Pebble.sendAppMessage({ "error": "Loc unavailable" });
+    Pebble.sendAppMessage({"KEY_PIDE":0, "KEY_CONDICION": 1,"KEY_TEMPERATURA": 200});
     updateInProgress = false;
 }
 

@@ -188,11 +188,9 @@ void sacudida (AccelAxisType axis, int32_t direction) {
       {
           //APP_LOG(APP_LOG_LEVEL_DEBUG, "Otros");
         	snprintf(s_icono_text, sizeof(s_icono_text), "*");
-
       }
 
-      
-    cuenta_atras_meteo = 6; //Muestra durante 6 segundos
+    cuenta_atras_meteo = 5; //Muestra durante 6 segundos
     static char s_temp_text[] = "000000";
   	snprintf(s_temp_text, sizeof(s_temp_text), "%do%s", TEMPERATURA,s_icono_text);
     text_layer_set_text(text_layer_letras, s_temp_text); 
@@ -229,66 +227,6 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
 
    // APP_LOG(APP_LOG_LEVEL_DEBUG, "Idioma guardado: %i", (int)persist_read_int(KEY_IDIOMA));
 
-
-    
-/*
-  if(strcmp(key_idioma_tuple->value->cstring, "spanish") == 0)
-      persist_write_int(KEY_IDIOMA, 1);
-  else if(strcmp(key_idioma_tuple->value->cstring, "english") == 0)
-    persist_write_int(KEY_IDIOMA, 0);
-  else if(strcmp(key_idioma_tuple->value->cstring, "french") == 0)
-    persist_write_int(KEY_IDIOMA, 2);
-  else if(strcmp(key_idioma_tuple->value->cstring, "german") == 0)
-    persist_write_int(KEY_IDIOMA, 3);
-  else if(strcmp(key_idioma_tuple->value->cstring, "italian") == 0)
-    persist_write_int(KEY_IDIOMA, 4);
-  else if(strcmp(key_idioma_tuple->value->cstring, "portuguese") == 0)
-    persist_write_int(KEY_IDIOMA, 5);  
-  else if(strcmp(key_idioma_tuple->value->cstring, "dutch") == 0)
-    persist_write_int(KEY_IDIOMA, 6);
-  else
-    persist_write_int(KEY_IDIOMA, 0);
- 
-  
-  if(strcmp(key_dateformat_tuple->value->cstring, "DDMM") == 0)
-      persist_write_bool(KEY_DATEFORMAT, 1);
-  else if(strcmp(key_dateformat_tuple->value->cstring, "MMDD") == 0)
-    persist_write_bool(KEY_DATEFORMAT, 0);  
-    
-  if(strcmp(key_vibe_tuple->value->cstring, "on") == 0)
-      persist_write_bool(KEY_VIBE, 1);
-  else if(strcmp(key_vibe_tuple->value->cstring, "off") == 0)
-      persist_write_bool(KEY_VIBE, 0); 
-    
-  if(strcmp(key_segundos_tuple->value->cstring, "on") == 0)
-      persist_write_bool(KEY_SEGUNDOS, 1);
-  else if(strcmp(key_segundos_tuple->value->cstring, "off") == 0)
-      persist_write_bool(KEY_SEGUNDOS, 0); 
-  
-  if(strcmp(key_show_meteo_tuple->value->cstring, "on") == 0)
-      persist_write_bool(KEY_SHOW_METEO, 1);
-  else if(strcmp(key_show_meteo_tuple->value->cstring, "off") == 0)
-      persist_write_bool(KEY_SHOW_METEO, 0);     
-    
-  if(strcmp(key_hourlyvibe_tuple->value->cstring, "on") == 0)
-     persist_write_bool(KEY_HOURLYVIBE, 1);
-  else if(strcmp(key_hourlyvibe_tuple->value->cstring, "off") == 0)
-     persist_write_bool(KEY_HOURLYVIBE, 0);
-
-  if(strcmp(key_bw_tuple->value->cstring, "bw") == 0)
-     persist_write_int(KEY_BACK, 0);
-  else if(strcmp(key_bw_tuple->value->cstring, "color") == 0)
-     persist_write_int(KEY_BACK, 1);  
-  else if(strcmp(key_bw_tuple->value->cstring, "ns") == 0)
-     persist_write_int(KEY_BACK, 2);  
-  
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Meteo es %i", KEY_SHOW_METEO);
-
-  // Vuelve a dibujar el reloj tras cerrar las preferencias
-  carga_preferencias();
-    
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Meteo es %i", KEY_SHOW_METEO);
-*/
 
   carga_preferencias();
 
@@ -327,7 +265,6 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     if (SHOW_METEO)
       pide_datos_tiempo();
 
-
     time_t now = time(NULL);
     struct tm *tick_time = localtime(&now);  
     handle_tick(tick_time, YEAR_UNIT + MONTH_UNIT + DAY_UNIT + HOUR_UNIT + MINUTE_UNIT + SECOND_UNIT);
@@ -336,9 +273,6 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     {
     Tuple *key_temperatura_tuple = dict_find(iterator, KEY_TEMPERATURA);
     Tuple *key_condicion_tuple = dict_find(iterator, KEY_CONDICION);
-
-
-    
     TEMPERATURA = key_temperatura_tuple->value->int16; 
     CONDICION = key_condicion_tuple->value->int16;
 
@@ -709,7 +643,6 @@ static void init(void) {
   //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   app_message_register_inbox_received(in_recv_handler);
   app_message_open(64, 64);
-  //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());		
 
   accel_tap_service_subscribe (sacudida);
 }
