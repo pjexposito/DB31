@@ -7,7 +7,7 @@ Pebble.addEventListener('ready', function() {
 });
 
 Pebble.addEventListener('appmessage', function(e) {
-    //console.log("Recibido. Pidiendo datos..."); 
+    console.log("Recibido. Pidiendo datos..."); 
     updateWeather();
 });
 
@@ -130,14 +130,14 @@ function fetchWeather(latitude, longitude) {
                     condition = response.weather[0].id;
 
 
-                    //console.log("Temperature: " + temperature + " Condition: " + condition);
+                    console.log("Temperature: " + temperature + " Condition: " + condition);
                   Pebble.sendAppMessage({"KEY_PIDE":0, "KEY_CONDICION": condition,"KEY_TEMPERATURA": temperature});
                     updateInProgress = false;
                 }
             } else {
                 //console.log("Error");
                 updateInProgress = false;
-              //console.log("Error de HTTP");
+                console.log("Error de HTTP");
                   Pebble.sendAppMessage({"KEY_PIDE":0, "KEY_CONDICION": 1,"KEY_TEMPERATURA": 200});
             }
         }

@@ -41,9 +41,6 @@ int IDIOMA;
 int TEMPERATURA, CONDICION;
 // Se guarda la temperatura y el icono de condición meteorológica
 
-int temporizador_meteo;
-// El temporizador para que cada 10 minutos pida los datos del tiempo
-
 int cuenta_atras_meteo;
 // Son los 10 segundos que pasan hasta que vuelve a mostrar de nuevo los datos de día y año
 
@@ -105,18 +102,20 @@ static void carga_preferencias(void)
     SHOW_METEO = persist_exists(KEY_SHOW_METEO) ? persist_read_int(KEY_SHOW_METEO) : 1;
   }
 
-static void handle_tick(struct tm *tick_time, TimeUnits units_changed);
+
 
 void pide_datos_tiempo()
   {
     //APP_LOG(APP_LOG_LEVEL_DEBUG, "Pidiendo datos");
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
-    Tuplet value = TupletInteger(KEY_PIDE, 0);
-    dict_write_tuplet(iter, &value); 
+    dict_write_uint32(iter, 8, 0);
     app_message_outbox_send();
 
 }
+
+static void handle_tick(struct tm *tick_time, TimeUnits units_changed);
+
 
 void sacudida (AccelAxisType axis, int32_t direction) {
     // SI SE CONSIGUEN DATOS, MUESTRA EL TIEMPO. 200 significa que no hay datos
@@ -273,10 +272,13 @@ static void in_recv_handler(DictionaryIterator *iterator, void *context)
     {
     Tuple *key_temperatura_tuple = dict_find(iterator, KEY_TEMPERATURA);
     Tuple *key_condicion_tuple = dict_find(iterator, KEY_CONDICION);
+    
+    if (key_temperatura_tuple->value->int16<200)
+    {
     TEMPERATURA = key_temperatura_tuple->value->int16; 
     CONDICION = key_condicion_tuple->value->int16;
-
-    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Temperatura %d - Condición %d", TEMPERATURA, CONDICION);
+    }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Temperatura %d - Condición %d", TEMPERATURA, CONDICION);
 
   }
 }
@@ -450,18 +452,6 @@ static void update_minutes(struct tm *tick_time) {
 	     strftime(s_time_text, sizeof(s_time_text), "%l:%M", tick_time);      
 
     text_layer_set_text(text_layer_hora, s_time_text);
-      //APP_LOG(APP_LOG_LEVEL_DEBUG, "SHOW_METEO vale: %d. Temp_meteo vale: %d", SHOW_METEO, temporizador_meteo);
-
-    if (SHOW_METEO)
-      {
-      temporizador_meteo++;
-      if (temporizador_meteo==15)
-        {
-        pide_datos_tiempo();
-        temporizador_meteo = 0;
-        }
-      }
-    //APP_LOG(APP_LOG_LEVEL_DEBUG, "Hora es %s", s_time_text);
 
 }
 
@@ -491,6 +481,14 @@ static void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
   if (units_changed & HOUR_UNIT) update_hours(tick_time);
   if (units_changed & MINUTE_UNIT) update_minutes(tick_time);
   if (units_changed & SECOND_UNIT) update_seconds(tick_time);
+    
+    if(SHOW_METEO) {
+    if(tick_time->tm_min % 15 == 0 && tick_time->tm_sec == 0) {
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Actualizando");
+
+      pide_datos_tiempo();
+    }
+  }
 }
 
 
@@ -520,7 +518,6 @@ static BitmapLayer* crea_capa_grafica(int x, int y, const uint8_t IMAGEN, bool C
 static void init(void) {
   TEMPERATURA = 200;
   carga_preferencias();
-  temporizador_meteo = 0;
   CONDICION = 0;
   NOCHE = 0;
   
@@ -639,10 +636,9 @@ static void init(void) {
 
   bluetooth_connection_service_subscribe(bluetooth_connection_callback);
   battery_state_service_subscribe(&update_battery);
-  //app_message_register_inbox_received((AppMessageInboxReceived) in_recv_handler);
-  //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   app_message_register_inbox_received(in_recv_handler);
-  app_message_open(64, 64);
+  app_message_open(128, 16);
+  //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
   accel_tap_service_subscribe (sacudida);
 }
