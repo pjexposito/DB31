@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DB 31 config page</title>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+  </head>
+  <body>
+  <div data-role="page" id="main">
+         <div data-role="header" class="jqm-header">
+           <h1>DB 31</h1>
+         </div>
+
+	    <div data-role="content">
+		  
+		  <div data-role="fieldcontain">
+            <label for="idioma_select">Language / Idioma:</label>
+            <select name="idioma_select" id="idioma_select">
+              <option value="spanish">Espa&ntilde;ol</option>
+              <option value="english">English</option>
+              <option value="french">Fran&ccedil;ais</option>
+              <option value="german">Deutsch</option>
+              <option value="italian">Italiano</option>
+              <option value="portuguese">Portugu&ecirc;s</option>
+              <option value="dutch">Dutch</option>
+            </select>
+	      </div>
+
+	      <div data-role="fieldcontain">
+            <label for="vibe_select">Vibe on BT disconnect / Vibrar al perder BT:</label>
+            <select name="vibe_select" id="vibe_select" data-role="slider">
+              <option value="off">Off</option>
+              <option selected value="on">On</option>
+            </select>
+	      </div>
+
+          <div data-role="fieldcontain">
+            <label for="dateformat_select">Date format / Formato de fecha:</label>
+            <select name="dateformat_select" id="dateformat_select">
+              <option value="DDMM">DD/MM</option>
+              <option value="MMDD">MM/DD</option>
+            </select>
+	      </div>
+
+          <div data-role="fieldcontain">
+            <label for="segundos_select">Show seconds / Mostrar segundero:</label>
+            <select name="segundos_select" id="segundos_select"  data-role="slider">
+              <option value="off">Off</option>	
+              <option selected value="on">On</option>
+            </select>
+	      </div>
+
+          <div data-role="fieldcontain">
+            <label for="hourlyvibe_select">Hourly vibe / Vibrar en el cambio de hora:</label>
+            <select name="hourlyvibe_select" id="hourlyvibe_select"  data-role="slider">
+              <option value="off">Off</option>
+              <option value="on">On</option>	
+            </select>
+          </div>	
+
+		  <div data-role="fieldcontain">
+            <label for="back_select">Watchface:</label>
+            <select name="back_select" id="back_select">
+              <option value="bw">B&amp;W</option>
+              <option value="color">Color</option>
+              <option selected value="ns">Color - No Shadows</option>
+
+            </select>
+          </div>	
+	   </div>
+
+    <div class="ui-body ui-body-b">
+       <fieldset class="ui-grid-a">	
+          <div class="ui-block-a"><button data-theme="d" id="save_button">Save / Guardar</button></div>
+       </fieldset>
+    </div>
+  </div>
+  
+  <script>
+      //Setup to allow easy adding more options later
+	  
+	    function saveOptions() {
+        var options = {
+          'idioma': $("#idioma_select").val(),
+          'vibe': $("#vibe_select").val(),
+          'dateformat': $("#dateformat_select").val(),
+          'segundos': $("#segundos_select").val(),
+          'hourlyvibe': $("#hourlyvibe_select").val(),
+          'back': $("#back_select").val()
+        }
+        return options;
+      }
+	  
+	  
+	  
+	        $().ready(function() {
+        $("#b-cancel").click(function() {
+          console.log("Cancel");
+          document.location = "pebblejs://close";
+        });
+        $("#save_button").click(function() {
+          console.log("Submit");
+          var location = "pebblejs://close#" + encodeURIComponent(JSON.stringify(saveOptions()));
+          console.log("Warping to: " + location);
+          console.log(location);
+          document.location = location;
+        });
+      });
+    </script>
+  </body>
+</html>
